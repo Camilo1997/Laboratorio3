@@ -8,8 +8,9 @@ import edu.eci.arsw.myrestaurant.model.ProductType;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.stereotype.Service;
 
-
+@Service
 public class RestaurantOrderServicesStub implements RestaurantOrderServices {
 
     

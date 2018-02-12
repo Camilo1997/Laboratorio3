@@ -16,15 +16,28 @@
  */
 package edu.eci.arsw.myrestaurant.restcontrollers;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import edu.eci.arsw.myrestaurant.beans.impl.BasicBillCalculator;
 import edu.eci.arsw.myrestaurant.model.Order;
 import edu.eci.arsw.myrestaurant.model.ProductType;
 import edu.eci.arsw.myrestaurant.model.RestaurantProduct;
+import edu.eci.arsw.myrestaurant.services.OrderServicesException;
+import edu.eci.arsw.myrestaurant.services.RestaurantOrderServices;
 import edu.eci.arsw.myrestaurant.services.RestaurantOrderServicesStub;
+import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,7 +47,72 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author hcadavid
  */
+@Service
+@RestController
+@RequestMapping(value = "/orders")
 public class OrdersAPIController {
-
+    @Autowired
+    private RestaurantOrderServices restaurant;
+    @Autowired
+    private BasicBillCalculator calculator;
+    
+    private Gson json = new Gson();
+    
+    private Map<String, Order> ordersMap;
+    
+    private String data;
+    
+    @RequestMapping(method = RequestMethod.GET)
+ 	public ResponseEntity<?> getOrders() {
+ 		try{
+                    ordersMap = new HashMap<>();
+                    Set<Integer> ordersKey= restaurant.getTablesWithOrders();
+                    for(Integer i: ordersKey) {
+                    
+                        ordersMap.put(i.toString(),restaurant.getTableOrder(i));
+                     }
+                    data=json.toJson(ordersMap);
+                    return new ResponseEntity<>(data,HttpStatus.ACCEPTED);
+ 		} catch (OrderServicesException ex) {
+ 			Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
+ 			return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
+ 		}  
+ 	}
+        
+        @RequestMapping(method = RequestMethod.GET, path="/{id}")
+        public ResponseEntity<?> getOrder(@PathVariable Integer id){
+            try{
+                ordersMap =new HashMap<>(); 
+                if(restaurant.getTableOrder(id) != null){
+                    ordersMap.put(id.toString(),restaurant.getTableOrder(id));
+                    data=json.toJson(ordersMap);
+                    return new ResponseEntity<>(data,HttpStatus.ACCEPTED);
+                }else{
+                    return new ResponseEntity<>("The table hasen't orders", HttpStatus.NOT_FOUND);
+                }
+            }catch(OrderServicesException ex){
+               Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
+ 			return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND); 
+            }
+            
+        }
+        
+        @RequestMapping(method = RequestMethod.POST)	
+	public ResponseEntity<?> setOrders(@RequestBody String jsonPost ){
+		try {
+                    ordersMap.clear();
+                    Type type = new TypeToken<Map<String, Order>>(){}.getType();
+                    ordersMap= json.fromJson(jsonPost,type);
+                    Set<String> tables= ordersMap.keySet();
+                    for(String i:tables){
+                    restaurant.addNewOrderToTable(ordersMap.get(i));
+                    }
+                     return new ResponseEntity<>(HttpStatus.CREATED);
+		} catch (OrderServicesException ex) {
+			Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
+			return new ResponseEntity<>(ex.getMessage(),HttpStatus.FORBIDDEN);            
+		}        
+	
+	}
     
 }

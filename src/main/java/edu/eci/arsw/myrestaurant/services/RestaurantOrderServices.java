@@ -23,9 +23,9 @@ public interface RestaurantOrderServices {
 
     RestaurantProduct getProductByName(String product) throws OrderServicesException;
 
-    Order getTableOrder(int tableNumber);
+    Order getTableOrder(int tableNumber)throws OrderServicesException;
 
-    Set<Integer> getTablesWithOrders();
+    Set<Integer> getTablesWithOrders()throws OrderServicesException;
 
     void releaseTable(int tableNumber) throws OrderServicesException;
     

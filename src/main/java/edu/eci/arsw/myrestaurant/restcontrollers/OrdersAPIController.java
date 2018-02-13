@@ -19,6 +19,7 @@ package edu.eci.arsw.myrestaurant.restcontrollers;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import edu.eci.arsw.myrestaurant.beans.impl.BasicBillCalculator;
+import edu.eci.arsw.myrestaurant.beans.impl.BillWithTaxesCalculator;
 import edu.eci.arsw.myrestaurant.model.Order;
 import edu.eci.arsw.myrestaurant.model.ProductType;
 import edu.eci.arsw.myrestaurant.model.RestaurantProduct;
@@ -54,7 +55,7 @@ public class OrdersAPIController {
     @Autowired
     private RestaurantOrderServices restaurant;
     @Autowired
-    private BasicBillCalculator calculator;
+    private BillWithTaxesCalculator calculator;
     
     private Gson json = new Gson();
     
@@ -98,7 +99,7 @@ public class OrdersAPIController {
         }
         
         @RequestMapping(method = RequestMethod.POST)	
-	public ResponseEntity<?> setOrders(@RequestBody String jsonPost ){
+	public ResponseEntity<?> Setorders(@RequestBody String jsonPost ){
 		try {
                     ordersMap.clear();
                     Type type = new TypeToken<Map<String, Order>>(){}.getType();
@@ -114,5 +115,30 @@ public class OrdersAPIController {
 		}        
 	
 	}
+        
+        @RequestMapping(method = RequestMethod.GET, path="/{idmesa}/total")
+        public ResponseEntity<?> getTotalOrder(@PathVariable Integer idmesa){
+           try{
+                Map<String,Integer> orderMap =new HashMap<>();
+                Order idOrder;
+                int amount=0;
+                if(restaurant.getTableOrder(idmesa) != null){
+                    idOrder=restaurant.getTableOrder(idmesa);
+                    orderMap=idOrder.getOrderAmountsMap();
+                    Set<String> keys=orderMap.keySet();
+                    for(String i:keys){
+                        amount+=orderMap.get(i);
+                    }
+                    
+                    return new ResponseEntity<>(amount,HttpStatus.ACCEPTED);
+                }else{
+                    return new ResponseEntity<>("The table hasen't orders", HttpStatus.NOT_FOUND);
+                }
+            }catch(OrderServicesException ex){
+               Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
+ 			return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND); 
+            } 
+        }
+              
     
 }

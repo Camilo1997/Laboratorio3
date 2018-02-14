@@ -54,9 +54,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrdersAPIController {
     @Autowired
     private RestaurantOrderServices restaurant;
-    @Autowired
-    private BillWithTaxesCalculator calculator;
-    
+   
     private Gson json = new Gson();
     
     private Map<String, Order> ordersMap;
@@ -119,25 +117,12 @@ public class OrdersAPIController {
         @RequestMapping(method = RequestMethod.GET, path="/{idmesa}/total")
         public ResponseEntity<?> getTotalOrder(@PathVariable Integer idmesa){
            try{
-                Map<String,Integer> orderMap =new HashMap<>();
-                Order idOrder;
                 int amount=0;
-                if(restaurant.getTableOrder(idmesa) != null){
-                    idOrder=restaurant.getTableOrder(idmesa);
-                    orderMap=idOrder.getOrderAmountsMap();
-                    Set<String> keys=orderMap.keySet();
-                    for(String i:keys){
-                        amount+=orderMap.get(i);
-                    }
-                    
+                amount=restaurant.calculateTableBill(idmesa);                  
                     return new ResponseEntity<>(amount,HttpStatus.ACCEPTED);
-                }else{
-                    return new ResponseEntity<>("The table hasen't orders", HttpStatus.NOT_FOUND);
-                }
-            }catch(OrderServicesException ex){
-               Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
- 			return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND); 
-            } 
+                }catch(OrderServicesException ex){
+                    Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
+                    return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);             } 
         }
               
     

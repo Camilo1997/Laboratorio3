@@ -8,12 +8,13 @@ import edu.eci.arsw.myrestaurant.model.ProductType;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RestaurantOrderServicesStub implements RestaurantOrderServices {
 
-    
+    @Autowired
     BillCalculator calc = null;
 
     public RestaurantOrderServicesStub() {
@@ -74,11 +75,9 @@ public class RestaurantOrderServicesStub implements RestaurantOrderServices {
 
     @Override
     public int calculateTableBill(int tableNumber) throws OrderServicesException {
-        if (!tableOrders.containsKey(tableNumber)) {
+        if (!tableOrders.containsKey(tableNumber)) 
             throw new OrderServicesException("Mesa inexistente o ya liberada:" + tableNumber);
-        } else {
-            return calc.calculateBill(tableOrders.get(tableNumber), productsMap);
-        }
+        return calc.calculateBill(tableOrders.get(tableNumber), productsMap);
     }
 
     private static final Map<String, RestaurantProduct> productsMap;

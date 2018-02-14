@@ -36,19 +36,9 @@ public class ApplicationServicesTests {
     
     @Test
     public void calculateBill() throws OrderServicesException{
-        Order order = new Order();
-        order.setTableNumber(2);
-        order.addDish("HAMBURGER", 2);
-        order.addDish("COKE", 2);
-        ros.addNewOrderToTable(order);
-        int amount=0;
-        try{
-            amount=ros.calculateTableBill(1);
-        }catch(OrderServicesException ex){
-            assertTrue(ex.getMessage(),false);
-        }
-        
-        assertEquals(amount,32290);
+       
+        assertEquals(ros.calculateTableBill(1),45302);
+        assertEquals(ros.calculateTableBill(3),32290);
         
     }
 

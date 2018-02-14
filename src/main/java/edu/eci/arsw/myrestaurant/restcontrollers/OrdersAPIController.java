@@ -124,6 +124,26 @@ public class OrdersAPIController {
                     Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
                     return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);             } 
         }
+       
+        @RequestMapping(method = RequestMethod.PUT , path ="/{idmesa}")
+        public ResponseEntity<?> productInOrder(@PathVariable Integer idmesa, @RequestBody String jsonOrder ){
+            Order ordenActual;
+            try{
+                Map<String,Integer> mapProduct = new HashMap<>();
+                Type type = new TypeToken<Map<String, Order>>(){}.getType();
+                ordersMap= json.fromJson(jsonOrder,type);
+                ordenActual = restaurant.getTableOrder(idmesa);
+                Set<String> key=ordersMap.keySet();
+                for (String i:key){
+                    ordenActual.addDish(i,mapProduct.get(i));
+                }
+                return new ResponseEntity<>(HttpStatus.CREATED);
+            }catch(OrderServicesException ex){
+                Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
+                return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);              
+            }
+        }
+
               
     
 }

@@ -114,34 +114,45 @@ public class OrdersAPIController {
 	
 	}
         
-        @RequestMapping(method = RequestMethod.GET, path="/{idmesa}/total")
-        public ResponseEntity<?> getTotalOrder(@PathVariable Integer idmesa){
+        @RequestMapping(method = RequestMethod.GET, path="/{id}/total")
+        public ResponseEntity<?> getTotalOrder(@PathVariable Integer id){
            try{
                 int amount=0;
-                amount=restaurant.calculateTableBill(idmesa);                  
+                amount=restaurant.calculateTableBill(id);                  
                     return new ResponseEntity<>(amount,HttpStatus.ACCEPTED);
                 }catch(OrderServicesException ex){
                     Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
                     return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);             } 
         }
        
-        @RequestMapping(method = RequestMethod.PUT , path ="/{idmesa}")
-        public ResponseEntity<?> productInOrder(@PathVariable Integer idmesa, @RequestBody String jsonOrder ){
+        @RequestMapping(method = RequestMethod.PUT , path ="/{id}")
+        public ResponseEntity<?> productInOrder(@PathVariable Integer id, @RequestBody String jsonOrder ){
             Order ordenActual;
             try{
                 Map<String,Integer> mapProduct = new HashMap<>();
-                Type type = new TypeToken<Map<String, Order>>(){}.getType();
-                ordersMap= json.fromJson(jsonOrder,type);
-                ordenActual = restaurant.getTableOrder(idmesa);
-                Set<String> key=ordersMap.keySet();
+                Type type = new TypeToken<Map<String, Integer>>(){}.getType();
+                mapProduct= json.fromJson(jsonOrder,type);
+                ordenActual = restaurant.getTableOrder(id);
+                Set<String> key=mapProduct.keySet();
                 for (String i:key){
                     ordenActual.addDish(i,mapProduct.get(i));
                 }
-                return new ResponseEntity<>(HttpStatus.CREATED);
+                return new ResponseEntity<>(HttpStatus.OK);
             }catch(OrderServicesException ex){
                 Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
                 return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);              
             }
+        }
+        
+        @RequestMapping(method = RequestMethod.DELETE, path="/{id}")
+        public ResponseEntity<?> deleteOrder (@PathVariable int id){
+            try{
+                restaurant.releaseTable(id);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }catch(OrderServicesException ex){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            
         }
 
               

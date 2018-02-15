@@ -1,0 +1,5 @@
+-Puede que un usuario intente consular la orden de una mesa mientras otro
+ usuario esta eliminando  infomación de esta misma mesa.
+
+-Puede que un usuario intnte cerrar una orden mientras otro la esta modificando
+ esta seria una de las posibles condiciones de carrera

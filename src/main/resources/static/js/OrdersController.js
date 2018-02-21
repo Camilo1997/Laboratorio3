@@ -1,4 +1,18 @@
-var orders= [{"order":{"Product":"PIZZA", "Quantity":3 ,"Price":10000}},{"order":{"Product":"HOTDOG", "Quantity":1 ,"Price":3000}},{"order":{"Product":"COKE","Quantity":4 ,"Price":1300}}];
+var orders = {
+    "order_id": 1,
+        "table_id": 1,
+            "products": [{
+                "product": "PIZZA",
+                "quantity": 3,
+                "price": "$15.000"
+            },
+            {
+                "product": "HAMBURGER",
+                "quantity": 1,
+                "price": "$12.300"
+            }
+            ]
+}
 
 addOrders();
 
@@ -21,3 +35,7 @@ function addOrder(i){
     Product.innerHTML= orders[i].order.Product;
 }
 
+function createTable() {
+    var body = document.getElementsByTagName('body')[0];
+    var order = document.createElement('table');
+}

@@ -1,52 +1,80 @@
-var orders = {
-    "table_id": 1,
-    "products": [{
-        "product": "PIZZA",
-        "quantity": 3,
-        "price": "$15.000"
+var nOrder = undefined;
+
+var newOrder ={ 
+    2:{
+        "orderAmountsMap":{
+            "HOTDOG":1,
+            "BEER":5
         },
-        {
-        "product": "HAMBURGER",
-        "quantity": 1,
-        "price": "$12.300"
-        }
-        ]
-}
-
-createOrder();
-
-function addOrders(){
-    createOrder();
-    for (i=0;i < orders.length;i++){
-        addOrder(i);
+        "tableNumber":2
     }
 }
 
 
+    
 
-function addOrder(i){
-    var table= document.getElementById("OrdersBody");
-    var newOrder = table.insertRow();
-    var Price = newOrder.insertCell(0);
-    var Quantity = newOrder.insertCell(0);
-    var Product = newOrder.insertCell(0);
-    Price.innerHTML= "$"+orders[i].order.Price;
-    Quantity.innerHTML= orders[i].order.Quantity;
-    Product.innerHTML= orders[i].order.Product;
+var prices ={"HOTDOG":3000,
+            "HAMBURGER":12300,
+            "BEER":2500,
+            "PIZZA":10000,
+            "COKE":1300
+            }
+
+
+
+function createOrder(tableO) {
+    axios.post('/orders',newOrder)
+        .then(function(){
+            $("#orders").append("<table id="+tableO+" class='table table-striped table-sm'><thead><tr><th>Product</th><th>Quantity</th><th>Price</th></tr></thead></table>");
+            for (i in newOrder[tableO].orderAmountsMap){
+                $("#"+tableO).append("<tr><td>"+i+"</td><td>"+newOrder[tableO].orderAmountsMap[i]+"</td><td>$"+prices[i]+"</td></tr>");    
+            }        
+        })
+        .catch(function(error){
+            cosole.log(error);
+            message();
+        
+        });
 }
 
-function createOrder() {
-    var body = document.getElementsByTagName('body')[0];
-    var order = document.createElement('table');
-    for (i=0;i< orders.products.length;i++){
-        var newOrder = order.insertRow();
-        var Price = newOrder.insertCell(0);
-        var Quantity = newOrder.insertCell(0);
-        var Product = newOrder.insertCell(0);
-        Price.innerHTML= "$"+orders.products[i].price;
-        Quantity.innerHTML= orders.products[i].quantity
-        Product.innerHTML= orders.products[i].product
-    }
-    
+function removeOrder(tableO){
+    axios.delete('/orders/'+tableO)
+        .then(function(){
+            document.getElementById(tableO).remove();        
+        })
+        .catch(function(error){
+            cosole.log(error);
+            message();
+        });
     
 }
+
+function loadOrders(){
+    nOrder={};
+    axios.get('/orders')
+        .then(function(response){
+            nOrder = response.data
+            $('#orders').empty(); 
+            for (i in nOrder){
+                if(nOrder[i].tableNumber!=2){
+                    var tableO = nOrder[i].tableNumber;
+                    $("#orders").append("<table id="+tableO+" class='table table-striped table-sm'><thead><tr><th>Product</th><th>Quantity</th><th>Price</th></tr></thead></table>");
+                    for (i in nOrder[tableO].orderAmountsMap){
+                         $("#"+tableO).append("<tr><td>"+i+"</td><td>"+nOrder[tableO].orderAmountsMap[i]+"</td><td>$"+prices[i]+"</td></tr>");    
+                    }        
+                }
+            }
+        })
+        .catch(function(error){
+            cosole.log(error);
+            message();
+        });
+}
+
+function message(){
+    alert("There is a problem with our servers. We apologize for the inconvince, please try again later"); 
+}
+    
+           
+
+    

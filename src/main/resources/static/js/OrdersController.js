@@ -1,18 +1,4 @@
-var nOrder = undefined;
-
-var newOrder ={ 
-    2:{
-        "orderAmountsMap":{
-            "HOTDOG":1,
-            "BEER":5
-        },
-        "tableNumber":2
-    }
-}
-
-
-    
-
+  
 var prices ={"HOTDOG":3000,
             "HAMBURGER":12300,
             "BEER":2500,
@@ -20,9 +6,38 @@ var prices ={"HOTDOG":3000,
             "COKE":1300
             }
 
+var  OrdersControllerModule = (function () {
+    var message= function(){
+        alert("There is a problem with our servers. We apologize for the inconvince, please try again later");
+    };
+
+    var showOrdersByTable = function (){
+        var callback = {
+            onSuccess: function (ordersList) {
+                 $('#orders').empty();
+                 for (i in ordersList){
+                    var tableO = ordersList[i].tableNumber;
+                        $("#orders").append("<table id="+tableO+" class='table table-striped table-sm'><thead><tr><th>Product</th><th>Quantity</th><th>Price</th></tr></thead></table>");
+                        for (i in ordersList[tableO].orderAmountsMap){
+                             $("#"+tableO).append("<tr><td>"+i+"</td><td>"+ordersList[tableO].orderAmountsMap[i]+"</td><td>$"+prices[i]+"</td></tr>");
+                        }                    
+                }
+            },
+            onFailed: function (error) {
+                console.log(error);
+                message();
+            }
+        }
+        RestControllerModule.getOrders(callback);
+    };
+
+    return {
+        showOrdersByTable : showOrdersByTable
+    };
+})();
 
 
-function createOrder(tableO) {
+/**function createOrder(tableO) {
     axios.post('/orders',newOrder)
         .then(function(){
             $("#orders").append("<table id="+tableO+" class='table table-striped table-sm'><thead><tr><th>Product</th><th>Quantity</th><th>Price</th></tr></thead></table>");
@@ -75,6 +90,6 @@ function message(){
     alert("There is a problem with our servers. We apologize for the inconvince, please try again later"); 
 }
     
-           
+**/        
 
     

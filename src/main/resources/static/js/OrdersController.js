@@ -17,6 +17,7 @@ var  OrdersControllerModule = (function () {
                  $('#orders').empty();
                  for (i in ordersList){
                     var tableO = ordersList[i].tableNumber;
+                        $('#orders').append("<h2 class= 'masthead-brand'>"+"Table  "+tableO+"</h2>");
                         $("#orders").append("<table id="+tableO+" class='table table-striped table-sm'><thead><tr><th>Product</th><th>Quantity</th><th>Price</th></tr></thead></table>");
                         for (i in ordersList[tableO].orderAmountsMap){
                              $("#"+tableO).append("<tr><td>"+i+"</td><td>"+ordersList[tableO].orderAmountsMap[i]+"</td><td>$"+prices[i]+"</td></tr>");

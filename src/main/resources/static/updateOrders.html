@@ -16,7 +16,7 @@
     <link href="./css/cover.css" rel="stylesheet">
 </head>
 
-<body class="text-center" >
+<body class="text-center" onload="OrdersControllerModule.viewOrders()">
 
 <div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
     <header class="masthead mb-auto">
@@ -29,17 +29,29 @@
         <br></br>
         <h1 class="masthead-brand">Orders </h1><br><br>
         <br></br>
-	<h3>Add A New Order</h3><br><br>
-	<div align="center" >
-		<select id="status" class="custom-select d-block w-50" required></select><br>
-		<input type="text" name="nDish" value="Item Name"><br>
-		<input type="text" name="nDishQuantity" value="Quantity"><br><br>
-		<button type ="button"> Add Order </button>
-	</div>	
+
     </header>
     <main role="main" class="inner cover" id="orders">
+        <h3>Add New Order</h3><br><br>
+        <div align="center" >
+            <select id="viewOrders" class="custom-select d-block w-50" required  onchange="OrdersControllerModule.loadItems(this.options[this.selectedIndex].value)">
+
+            </select>
+            <br>
+            <input type="text" name="nDish" value="Item Name"><br>
+            <input type="text" name="nDishQuantity" value="Quantity"><br><br>
+            <button type ="button" onclick="OrdersControllerModule.addItemToOrder(viewOrders.options[viewOrders.selectedIndex].value,{})"> Add Order </button>
+        </div>
+        <br><br><br>
         <h3>Update Orders</h3>        
-        <label for="name"></label>
+        <table id="Items" class='table table-striped table-sm'>
+            <thead>
+                <tr>
+                    <th><h4>Item</h4></th>
+                    <th><h4>Quantity</h4></th>
+                </tr>
+            </thead>
+        </table>
     </main>
     <footer class="mastfoot mt-auto">
         <div class="inner">

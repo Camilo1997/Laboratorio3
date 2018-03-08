@@ -7,7 +7,7 @@ var prices ={"HOTDOG":3000,
             "COKE":1300
             }
 
-
+var selectOrder=1;
 var  OrdersControllerModule = (function () {
     var message= function(){
         alert("There is a problem with our servers. We apologize for the inconvince, please try again later");
@@ -61,11 +61,11 @@ var  OrdersControllerModule = (function () {
         RestControllerModule.updateOrder(orderId,itemJSON,callback);
     };
 
-    var updateOrder = function (orderId,itemName,update){
-        alert(itemName);
-        var nName=update[0];
-        var nQuantity=update[1];
-        var dishes =ordersLoad[orderId].orderAmountsMap;
+    var updateOrder = function (itemName){
+        alert(itemName.value);
+        var nName=document.getElementById("dishN").value
+        var nQuantity=document.getElementById("dishQ").value
+        var dishes =ordersLoad[selectOrder].orderAmountsMap;
         delete dishes[itemName];
         dishes.nName= nQuantity;
 
@@ -79,7 +79,7 @@ var  OrdersControllerModule = (function () {
                 message();
             }
         }
-        RestControllerModule.updateOrder(orderId,dishes,callback);
+        RestControllerModule.updateOrder(selectOrder,dishes,callback);
     };
 
     /**
@@ -119,6 +119,7 @@ var  OrdersControllerModule = (function () {
     };
 
     var loadItems =function(table){
+        selectOrder=table;
         $("#Items").empty();
         for(i in ordersLoad[table].orderAmountsMap){
                 reloadPage(i,ordersLoad[table].orderAmountsMap[i]);
@@ -135,14 +136,14 @@ var  OrdersControllerModule = (function () {
     var reloadItem= function(idItem,quantity){
 
         return      "<td>"+
-                        "<input type='text' name='dishName' value='"+idItem+"'>"+
+                        "<input id='dishN' type='text' name='dishName' value='"+idItem+"'>"+
                     "</td>" +
                     "<td>"+
-                        "<input type='text' name='dishQuantity' value='"+quantity+"'>"+
+                        "<input id='dishQ' type='text' name='dishQuantity' value='"+quantity+"'>"+
 
                     "</td>" +
                     "<td>" +
-                        "<button type='button' onClick='OrdersControllerModule.updateOrder(viewOrders.options[viewOrders.selectedIndex].value,"+idItem+")'> Update</button>" +
+                        "<button type='button' onClick='OrdersControllerModule.updateOrder("+idItem+")'> Update</button>" +
                         "<button type='button'> Delete</button>" +
                     "</td>";
     }

@@ -43,23 +43,10 @@ var  OrdersControllerModule = (function () {
                 if(Object.keys(ordersLoad[orderId].orderAmountsMap).includes(name)){
                     quantity=parseInt(quantity)+ordersLoad[orderId].orderAmountsMap[name];
                     $("#"+name).empty()
-                    $("#"+name).append(
-                "            <td>"+name+"</td>" +
-                "            <td>"+quantity+"</td>" +
-                "            <td>" +
-                "               <button type='button'> Update</button>" +
-                "               <button type='button'> Delete</button>" +
-                "            </td>" );
+                    $("#"+name).append(reloadItem(name,quantity));
                 }else{
                     loadItems(orderId);
-                        $("#Items").append("<tr id="+name+">" +
-                             "                   <td>"+name+"</td>" +
-                             "                   <td>"+quantity+"</td>" +
-                             "                   <td>" +
-                             "                       <button type='button'> Update</button>" +
-                             "                            <button type='button'> Delete</button>" +
-                             "                       </td>" +
-                             "                   </tr>");
+                    reloadPage(name,quantity);
                 }
 
 
@@ -74,22 +61,29 @@ var  OrdersControllerModule = (function () {
         RestControllerModule.updateOrder(orderId,itemJSON,callback);
     };
 
-    /**var updateOrder = function (){
-        int orderId;
-      var callback = {
-          onSuccess: function () {
-              
-          },
-          onFailed: function () {
-              
-          }
-      }
-      RestControllerModule.updateOrder(orderId,callback);
+    var updateOrder = function (orderId,itemName,update){
+        alert(itemName);
+        var nName=update[0];
+        var nQuantity=update[1];
+        var dishes =ordersLoad[orderId].orderAmountsMap;
+        delete dishes[itemName];
+        dishes.nName= nQuantity;
+
+        var callback = {
+            onSuccess: function () {
+                    document.getElementById(itemName).id= nName;
+                    $("#"+nName).append(reloadItem(nName,nQuantity));
+            },
+            onFailed: function (error) {
+                console.log(error);
+                message();
+            }
+        }
+        RestControllerModule.updateOrder(orderId,dishes,callback);
     };
 
-
-    var deleteOrderItem = function (itemName){
-        int orderId;
+    /**
+    var deleteOrderItem = function (orderId,itemName){
         var callback = {
             onSuccess: function () {
 
@@ -122,30 +116,43 @@ var  OrdersControllerModule = (function () {
             }
         }
         RestControllerModule.getOrders(callback);
-    }
+    };
 
     var loadItems =function(table){
         $("#Items").empty();
         for(i in ordersLoad[table].orderAmountsMap){
-                $("#Items").append("<tr id="+i+">" +
-                    "                   <td>"+i+"</td>" +
-                    "                   <td>"+ordersLoad[table].orderAmountsMap[i]+"</td>" +
-                    "                   <td>" +
-                    "                       <button type='button'> Update</button>" +
-                "                            <button type='button'> Delete</button>" +
-                "                       </td>" +
-                "                   </tr>");
-
+                reloadPage(i,ordersLoad[table].orderAmountsMap[i]);
 
         }
 
+    };
+
+    var reloadPage= function(id,quantity){
+        $("#Items").append("<tr id="+id+">" + reloadItem(id,quantity)+"</tr>");
+
+    };
+
+    var reloadItem= function(idItem,quantity){
+
+        return      "<td>"+
+                        "<input type='text' name='dishName' value='"+idItem+"'>"+
+                    "</td>" +
+                    "<td>"+
+                        "<input type='text' name='dishQuantity' value='"+quantity+"'>"+
+
+                    "</td>" +
+                    "<td>" +
+                        "<button type='button' onClick='OrdersControllerModule.updateOrder(viewOrders.options[viewOrders.selectedIndex].value,"+idItem+")'> Update</button>" +
+                        "<button type='button'> Delete</button>" +
+                    "</td>";
     }
 
     return {
         showOrdersByTable : showOrdersByTable,
         addItemToOrder: addItemToOrder,
         viewOrders: viewOrders,
-        loadItems: loadItems/**,
+        loadItems: loadItems,
+        updateOrder: updateOrder/**,
         deleteOrderItem:deleteOrderItem**/
     };
 })();

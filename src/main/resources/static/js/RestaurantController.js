@@ -12,8 +12,8 @@ var RestControllerModule = (function () {
             });
     };
 
-    var updateOrder = function (orderId, callback){
-        axios.put('/orders/'+orderId,ordersAmountsMap)
+    var updateOrder = function (orderId,item, callback){
+        axios.put('/orders/'+orderId,item)
             .then(function (){
                 callback.onSuccess();
             })

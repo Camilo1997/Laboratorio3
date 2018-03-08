@@ -38,9 +38,9 @@
 
             </select>
             <br>
-            <input type="text" name="nDish" value="Item Name"><br>
-            <input type="text" name="nDishQuantity" value="Quantity"><br><br>
-            <button type ="button" onclick="OrdersControllerModule.addItemToOrder(viewOrders.options[viewOrders.selectedIndex].value,{})"> Add Order </button>
+            <input id="name" type="text" name="nDish" value="Item Name"><br>
+            <input id="quantity"  type="number" name="quantity" value="0"><br><br>
+            <button type ="submit"  value="item" onclick="OrdersControllerModule.addItemToOrder(viewOrders.options[viewOrders.selectedIndex].value,[ $('#name').val(),$('#quantity').val()])"> Add Order </button>
         </div>
         <br><br><br>
         <h3>Update Orders</h3>        

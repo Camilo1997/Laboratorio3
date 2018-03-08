@@ -35,26 +35,43 @@ var  OrdersControllerModule = (function () {
     };
 
     var addItemToOrder = function (orderId,  item) {
+        var name=item[0];
+        var quantity=item[1];
+        var itemJSON = JSON.parse('{ "'+name+'":'+quantity+'}');
         var callback  = {
             onSuccess: function  (){
-                for(i in item)
-                {
-                    $("Items").append("<tr id=''>" +
-                        "               <td>" + i + "</td>" +
-                        "               <td>" + orderAmountsMap[i] + "</td>" +
-                        "               <td>" +
-                        "                   <button type=\"button\"> Update</button>" +
-                        "                   <button type=\"button\"> Delete</button>" +
-                        "               </td>" +
-                        "              </tr>");
+                if(Object.keys(ordersLoad[orderId].orderAmountsMap).includes(name)){
+                    quantity=parseInt(quantity)+ordersLoad[orderId].orderAmountsMap[name];
+                    $("#"+name).empty()
+                    $("#"+name).append(
+                "            <td>"+name+"</td>" +
+                "            <td>"+quantity+"</td>" +
+                "            <td>" +
+                "               <button type='button'> Update</button>" +
+                "               <button type='button'> Delete</button>" +
+                "            </td>" );
+                }else{
+                    loadItems(orderId);
+                        $("#Items").append("<tr id="+name+">" +
+                             "                   <td>"+name+"</td>" +
+                             "                   <td>"+quantity+"</td>" +
+                             "                   <td>" +
+                             "                       <button type='button'> Update</button>" +
+                             "                            <button type='button'> Delete</button>" +
+                             "                       </td>" +
+                             "                   </tr>");
                 }
+
+
+
+
             },
             onFailed:  function(error){
                 console.log(error);
                 message();
             }
         }
-        RestControllerModule.updateOrder(orderId,callback);
+        RestControllerModule.updateOrder(orderId,itemJSON,callback);
     };
 
     /**var updateOrder = function (){
@@ -110,7 +127,7 @@ var  OrdersControllerModule = (function () {
     var loadItems =function(table){
         $("#Items").empty();
         for(i in ordersLoad[table].orderAmountsMap){
-                $("#Items").append("<tr>" +
+                $("#Items").append("<tr id="+i+">" +
                     "                   <td>"+i+"</td>" +
                     "                   <td>"+ordersLoad[table].orderAmountsMap[i]+"</td>" +
                     "                   <td>" +

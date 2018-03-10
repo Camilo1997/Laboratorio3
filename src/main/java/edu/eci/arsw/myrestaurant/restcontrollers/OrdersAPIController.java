@@ -162,6 +162,18 @@ public class OrdersAPIController {
             
         }
 
-              
-    
+
+        @RequestMapping(method = RequestMethod.DELETE, path="/{id}/{dash}")
+        public ResponseEntity<?> deleteOrderItem (@PathVariable int id,  @PathVariable String dash){
+        try{
+            Order order=restaurant.getTableOrder(id);
+            order.deleteDish(dash);
+            if(order.getOrderedDishes().size()==0)
+                restaurant.releaseTable(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch(OrderServicesException ex){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+    }
 }

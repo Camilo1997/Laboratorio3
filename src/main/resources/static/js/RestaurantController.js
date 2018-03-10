@@ -22,19 +22,19 @@ var RestControllerModule = (function () {
             });
     };
 
-    /**var deleteOrder = function(orderId, callback){
-        axios.delete('/orders'+orderId)
+    var deleteOrder = function(orderId,itemName, callback){
+        axios.delete('/orders/'+orderId+'/'+itemName)
             .then(function(){
                 callback.onSuccess();
             })
             .catch(function (error) {
                callback.onFailed(error);
             });
-    }**/
+    };
     return {
         getOrders: getOrders,
-        updateOrder: updateOrder/**,
-        deleteOrder: deleteOrder**/
+        updateOrder: updateOrder,
+        deleteOrder: deleteOrder
     };
     })();
     

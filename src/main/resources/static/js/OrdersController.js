@@ -65,8 +65,8 @@ var  OrdersControllerModule = (function () {
     };
 
     var updateOrder = function (){
-        var nName=document.getElementById("dishN").value;
-        var nQuantity=document.getElementById("dishQ").value;
+        var nName=document.getElementById("dishN"+itemSelected).value;
+        var nQuantity=document.getElementById("dishQ"+itemSelected).value;
         var dishes =ordersLoad[selectOrder].orderAmountsMap;
         delete dishes[itemSelected];
         dishes[nName]= nQuantity;
@@ -87,18 +87,19 @@ var  OrdersControllerModule = (function () {
         RestControllerModule.updateOrder(selectOrder,dishes,callback);
     };
 
-    /**
-    var deleteOrderItem = function (orderId,itemName){
+    var deleteOrderItem = function (itemName){
         var callback = {
             onSuccess: function () {
-
+                document.getElementById(itemName).remove();
+                alert('Se elimino correctamente');
             },
-            onFailed: function () {
-
+            onFailed: function (error) {
+                console.log(error);
+                message();
             }
         }
-        RestControllerModule.deleteOrder(orderId,callback);
-    };**/
+        RestControllerModule.deleteOrder(selectOrder,itemName,callback);
+    };
 
     var viewOrders= function(){
 
@@ -133,9 +134,9 @@ var  OrdersControllerModule = (function () {
 
     };
 
-    var setItem = function(){
+    var setItem = function(value){
         if(!isSelected){
-            itemSelected =document.getElementById("dishN").value;
+            itemSelected =value;
             isSelected=true;
         }
 
@@ -149,15 +150,13 @@ var  OrdersControllerModule = (function () {
     var reloadItem= function(idItem,quantity){
 
         return      "<td>"+
-                        "<input id='dishN' type='text' name='dishName' value='"+idItem+"' onfocus='OrdersControllerModule.setItem()'>"+
-                    "</td>" +
-                    "<td>"+
-                        "<input id='dishQ' type='text' name='dishQuantity' value='"+quantity+"' onfocus='OrdersControllerModule.setItem()' >"+
+                        "<input id='dishN"+idItem+"' type='text' name='dishName' value='"+idItem+"' onfocus='OrdersControllerModule.setItem(this.value)'>"+
+                        "<input id='dishQ"+idItem+"' type='text' name='dishQuantity' value='"+quantity+"' onfocus='OrdersControllerModule.setItem(dishN"+idItem+".value)' >"+
 
                     "</td>" +
                     "<td>" +
-                        "<button type='button' onClick='OrdersControllerModule.updateOrder("+idItem+")'> Update</button>" +
-                        "<button type='button'> Delete</button>" +
+                        "<button type='button' onClick='OrdersControllerModule.updateOrder()'> Update</button>" +
+                        "<button type='button' onClick='OrdersControllerModule.deleteOrderItem(this.parentNode.parentNode.id)' > Delete</button>" +
                     "</td>";
     }
 
@@ -167,8 +166,8 @@ var  OrdersControllerModule = (function () {
         viewOrders: viewOrders,
         loadItems: loadItems,
         updateOrder: updateOrder,
-        setItem:setItem/**,
-        deleteOrderItem:deleteOrderItem**/
+        setItem:setItem,
+        deleteOrderItem:deleteOrderItem
     };
 })();
 

@@ -64,6 +64,10 @@ public class Order {
         }
     }
 
+    public void deleteDish(String dish){
+        orderAmountsMap.remove(dish);
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Table " + tableNumber+"\n");

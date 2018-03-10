@@ -57,6 +57,13 @@ public class Order {
         }
     }
 
+    public void deleteDishes(){
+        Set<String> keys = orderAmountsMap.keySet();
+        for(String i: keys){
+            orderAmountsMap.remove(i);
+        }
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Table " + tableNumber+"\n");

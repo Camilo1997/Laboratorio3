@@ -1,5 +1,7 @@
 var ordersLoad=undefined;
 
+var itemSelected=undefined;
+
 var prices ={"HOTDOG":3000,
             "HAMBURGER":12300,
             "BEER":2500,
@@ -8,6 +10,7 @@ var prices ={"HOTDOG":3000,
             }
 
 var selectOrder=1;
+var isSelected=false;
 var  OrdersControllerModule = (function () {
     var message= function(){
         alert("There is a problem with our servers. We apologize for the inconvince, please try again later");
@@ -61,18 +64,20 @@ var  OrdersControllerModule = (function () {
         RestControllerModule.updateOrder(orderId,itemJSON,callback);
     };
 
-    var updateOrder = function (itemName){
-        alert(itemName.value);
-        var nName=document.getElementById("dishN").value
-        var nQuantity=document.getElementById("dishQ").value
+    var updateOrder = function (){
+        var nName=document.getElementById("dishN").value;
+        var nQuantity=document.getElementById("dishQ").value;
         var dishes =ordersLoad[selectOrder].orderAmountsMap;
-        delete dishes[itemName];
-        dishes.nName= nQuantity;
-
+        delete dishes[itemSelected];
+        dishes[nName]= nQuantity;
         var callback = {
             onSuccess: function () {
-                    document.getElementById(itemName).id= nName;
+                    $("#"+itemSelected).empty();
+                    document.getElementById(itemSelected).id = nName;
                     $("#"+nName).append(reloadItem(nName,nQuantity));
+                    alert("Orden actualizada");
+                    itemSelected=undefined;
+                    isSelected=false;
             },
             onFailed: function (error) {
                 console.log(error);
@@ -121,9 +126,17 @@ var  OrdersControllerModule = (function () {
     var loadItems =function(table){
         selectOrder=table;
         $("#Items").empty();
-        for(i in ordersLoad[table].orderAmountsMap){
-                reloadPage(i,ordersLoad[table].orderAmountsMap[i]);
+        for(i in ordersLoad[table].orderAmountsMap) {
+            reloadPage(i, ordersLoad[table].orderAmountsMap[i]);
 
+        }
+
+    };
+
+    var setItem = function(){
+        if(!isSelected){
+            itemSelected =document.getElementById("dishN").value;
+            isSelected=true;
         }
 
     };
@@ -136,10 +149,10 @@ var  OrdersControllerModule = (function () {
     var reloadItem= function(idItem,quantity){
 
         return      "<td>"+
-                        "<input id='dishN' type='text' name='dishName' value='"+idItem+"'>"+
+                        "<input id='dishN' type='text' name='dishName' value='"+idItem+"' onfocus='OrdersControllerModule.setItem()'>"+
                     "</td>" +
                     "<td>"+
-                        "<input id='dishQ' type='text' name='dishQuantity' value='"+quantity+"'>"+
+                        "<input id='dishQ' type='text' name='dishQuantity' value='"+quantity+"' onfocus='OrdersControllerModule.setItem()' >"+
 
                     "</td>" +
                     "<td>" +
@@ -153,7 +166,8 @@ var  OrdersControllerModule = (function () {
         addItemToOrder: addItemToOrder,
         viewOrders: viewOrders,
         loadItems: loadItems,
-        updateOrder: updateOrder/**,
+        updateOrder: updateOrder,
+        setItem:setItem/**,
         deleteOrderItem:deleteOrderItem**/
     };
 })();

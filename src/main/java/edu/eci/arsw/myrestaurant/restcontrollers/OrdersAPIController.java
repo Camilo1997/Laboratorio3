@@ -134,7 +134,14 @@ public class OrdersAPIController {
                 mapProduct= json.fromJson(jsonOrder,type);
                 ordenActual = restaurant.getTableOrder(id);
                 Set<String> key=mapProduct.keySet();
+                int cont=0;
                 for (String i:key){
+                    if(key.size()==1)
+                        ordenActual.addDish(i,mapProduct.get(i));
+                    else if(cont==0) {
+                        ordenActual.deleteDishes();
+                        cont+=1;
+                    }
                     ordenActual.addDish(i,mapProduct.get(i));
                 }
                 return new ResponseEntity<>(HttpStatus.OK);
